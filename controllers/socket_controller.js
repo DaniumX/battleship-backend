@@ -37,6 +37,17 @@ const handlePlayerJoined = function (user) {
 
 const handleDisconnect = function () {
   debug(`Client ${this.id} disconnected :(`);
+
+  const removeUser = (id) => {
+    if (players.findIndex((player) => player.id === id) !== -1)
+      return players.splice(
+        players.findIndex((player) => player.id === id),
+        1
+      )[0];
+  };
+
+  if (removeUser(this.id))
+    io.to(removeUser(this.id).room).emit("user:disconnected", true);
 };
 
 const handleJoinGame = function () {
