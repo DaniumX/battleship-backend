@@ -1,8 +1,8 @@
 const debug = require("debug")("battleship:socket_controller");
 let io = null;
-let players = [];
+let users = [];
 
-const handlePlayerJoined = function (user) {
+const handleUserJoined = function (user) {
   debug(`Player ${user} joined game`);
 
   if (!players.length) {
@@ -13,11 +13,11 @@ const handlePlayerJoined = function (user) {
       isPlayersTurn: true,
     };
     this.join(userOne.room);
-    players.push(userOne);
-    io.to(userOne.room).emit("users:profiles", players);
+    users.push(userOne);
+    io.to(userOne.room).emit("users:profiles", users);
     return;
   }
-  if (players.length) {
+  if (users.length) {
     const userTwo = {
       id: this.id,
       room: players[0].room,
@@ -25,8 +25,8 @@ const handlePlayerJoined = function (user) {
       isPlayersTurn: true,
     };
     this.join(userTwo.room);
-    players.push(userTwo);
-    io.to(playerTwo.room).emit("users:profiles", players);
+    users.push(userTwo);
+    io.to(userTwo.room).emit("users:profiles", users);
     return;
   }
 
@@ -39,9 +39,9 @@ const handleDisconnect = function () {
   debug(`Client ${this.id} disconnected :(`);
 
   const removeUser = (id) => {
-    if (players.findIndex((player) => player.id === id) !== -1)
-      return players.splice(
-        players.findIndex((player) => player.id === id),
+    if (users.findIndex((user) => user.id === id) !== -1)
+      return users.splice(
+        users.findIndex((user) => user.id === id),
         1
       )[0];
   };
@@ -50,10 +50,8 @@ const handleDisconnect = function () {
     io.to(removeUser(this.id).room).emit("user:disconnected", true);
 };
 
-const handleJoinGame = function () {
-  debug(`Client ${this.id} wants to join the game`);
-
-  io.emit("join:game");
+const handleShot = function (target) {
+  this.broadcast.emit("user:fire", target);
 };
 
 module.exports = function (socket, _io) {
@@ -62,6 +60,6 @@ module.exports = function (socket, _io) {
   debug(`Client ${socket.id} connected`);
 
   socket.on("disconnect", handleDisconnect);
-
-  socket.on("battleship:start", handleJoinGame);
+  socket.on("user:joined", handleUserJoined);
+  socket.on("user:shot", handleShot);
 };
