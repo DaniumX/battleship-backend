@@ -54,6 +54,11 @@ const handleShot = function (target) {
   this.broadcast.emit("user:fire", target);
 };
 
+const handleShotResponse = function (id, boolean) {
+  console.log(`Shot hit? ${boolean}`);
+  this.broadcast.emit("user:shot-received", id, boolean);
+};
+
 module.exports = function (socket, _io) {
   io = _io;
 
@@ -62,4 +67,5 @@ module.exports = function (socket, _io) {
   socket.on("disconnect", handleDisconnect);
   socket.on("user:joined", handleUserJoined);
   socket.on("user:shot", handleShot);
+  socket.on("user:shot-response", handleShotResponse);
 };
