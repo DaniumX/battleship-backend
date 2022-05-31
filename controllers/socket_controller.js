@@ -59,6 +59,10 @@ const handleShotResponse = function (id, boolean) {
   this.broadcast.emit("user:shot-received", id, boolean);
 };
 
+const handleSunkenShip = function (id) {
+  this.broadcast.emit("user:ship-sunken-response", id);
+};
+
 module.exports = function (socket, _io) {
   io = _io;
 
@@ -68,4 +72,5 @@ module.exports = function (socket, _io) {
   socket.on("user:joined", handleUserJoined);
   socket.on("user:shot", handleShot);
   socket.on("user:shot-response", handleShotResponse);
+  socket.on("player:ship-sunken", handleSunkenShip);
 };
