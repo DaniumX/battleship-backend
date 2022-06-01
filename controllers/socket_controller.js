@@ -22,7 +22,7 @@ const handleUserJoined = function (user) {
       id: this.id,
       room: players[0].room,
       username: user,
-      isPlayersTurn: true,
+      isPlayersTurn: false,
     };
     this.join(userTwo.room);
     users.push(userTwo);
